@@ -154,7 +154,7 @@ const [loading, setLoading] = useState(false); // To track the loading state for
 };
 
 
-        console.log('Payload to API:', payload);
+       
 
         const response = await fetch('/api/saveResponses', {
             method: 'POST',
