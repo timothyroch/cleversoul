@@ -84,7 +84,8 @@ const Questionary: React.FC = () => {
   const [responses, setResponses] = useState<{ [key: string]: any }>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showPopup, setShowPopup] = useState(false); // State to control the popup
-  const [isSaving, setIsSaving] = useState(false); // Track save state
+  const [isSaving, setIsSaving] = useState(false);   // Track save state
+
 
   /*ai implementation*/
   const [summary, setSummary] = useState<string | null>(null); // To store the AI-generated summary
