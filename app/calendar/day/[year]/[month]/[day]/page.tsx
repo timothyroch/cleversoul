@@ -21,13 +21,17 @@ interface Quiz {
   summary: QuizSummary;
 }
 
-export default function DayPage({
-  params,
-}: {
-  params: { year: string; month: string; day: string };
-}) {
+interface DayPageProps {
+  params: {
+    year: string;
+    month: string;
+    day: string;
+  };
+}
+
+export default function DayPage({ params }: DayPageProps) {
   const router = useRouter();
-  const { year, month, day } = params;  // Removed React.use(params) as it's invalid
+  const { year, month, day } = params; // Removed React.use(params) as it's invalid
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);  // Replaced any with Quiz type
   const [loading, setLoading] = useState<boolean>(true);  // Added explicit boolean type
