@@ -161,6 +161,7 @@ const [loading, setLoading] = useState(false); // To track the loading state for
             headers: {
                 'Content-Type': 'application/json',
             },
+          // @ts-ignore
             body: JSON.stringify(payload),
         });
 
