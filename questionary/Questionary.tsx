@@ -119,28 +119,39 @@ const [loading, setLoading] = useState(false); // To track the loading state for
   /*end of the ai implementation*/
   
 
-  const saveResponses = async () => {
-    setIsSaving(true);
-    try {
-        const content = summary?.message?.content;
+ const saveResponses = async () => {
+  setIsSaving(true);
+  try {
+    // Ensure summary is an object before accessing properties
+    const content = typeof summary === 'object' && summary?.message?.content;
 
-        const currentDateTime = new Date().toISOString(); // Get the current date and time in ISO format
+    const currentDateTime = new Date().toISOString(); // Get the current date and time in ISO format
 
-        const payload = {
-            category: 'État émotionnel et psychique',
-            questions: Object.entries(responses).map(([question, value]) => ({
-                question,
-                response: value.response,
-                rating: value.rating !== undefined ? `${value.rating}/10` : undefined,
-            })),
-            summary: content
-                ? {
-                    daySummary: content.match(/### Résumé de la journée :\n([\s\S]*?)\n\n### Recommandations :/)?.[1] || null,
-                    recommendations: content.match(/### Recommandations :\n([\s\S]*)/)?.[1] || null,
-                }
-                : null,
-            timestamp: currentDateTime, // Add the current date and time
-        };
+    const payload = {
+      category: 'État émotionnel et psychique',
+      questions: Object.entries(responses).map(([question, value]) => ({
+        question,
+        response: value.response,
+        rating: value.rating !== undefined ? `${value.rating}/10` : undefined,
+      })),
+      summary: content
+        ? {
+            daySummary: content.match(/### Résumé de la journée :\n([\s\S]*?)\n\n### Recommandations :/)?.[1] || null,
+            recommendations: content.match(/### Recommandations :\n([\s\S]*)/)?.[1] || null,
+          }
+        : null,
+      timestamp: currentDateTime, // Add the current date and time
+    };
+
+    // Your API call or logic to save payload here...
+
+  } catch (error) {
+    console.error("Error saving responses:", error);
+  } finally {
+    setIsSaving(false);
+  }
+};
+
 
         console.log('Payload to API:', payload);
 
