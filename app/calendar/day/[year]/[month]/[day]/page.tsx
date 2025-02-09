@@ -29,7 +29,7 @@ interface DayPageProps {
   };
 }
 
-export default function DayPage({ params }: { params: any }) {
+export default function DayPage({ params }: DayPageProps) {
   const router = useRouter();
   const { year, month, day } = params;
 
