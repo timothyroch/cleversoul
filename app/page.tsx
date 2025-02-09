@@ -37,8 +37,9 @@ export default function HomePage() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const router = useRouter();  
 
-  // Declare hooks at the top level
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
 
  // eslint-disable-next-line react-hooks/rules-of-hooks
