@@ -120,12 +120,12 @@ const [loading, setLoading] = useState(false); // To track the loading state for
   /*end of the ai implementation*/
   
 
- const saveResponses = async () => {
+
+const saveResponses = async () => {
   setIsSaving(true);
   try {
     // Ensure summary is an object before accessing properties
-   const content = summary;
-
+    const content = summary;
     const currentDateTime = new Date().toISOString(); // Get the current date and time in ISO format
 
     const payload = {
@@ -144,41 +144,31 @@ const [loading, setLoading] = useState(false); // To track the loading state for
       timestamp: currentDateTime, // Add the current date and time
     };
 
-    // Your API call or logic to save payload here...
+    // Move the fetch request inside this try block
+    const response = await fetch('/api/saveResponses', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // @ts-ignore
+      body: JSON.stringify(payload),
+    });
 
+    if (response.ok) {
+      setShowPopup(true); // Show the popup on success
+    } else {
+      const errorText = await response.text();
+      console.error('Server response:', errorText);
+      alert('Erreur lors de la sauvegarde des réponses.');
+    }
   } catch (error) {
-    console.error("Error saving responses:", error);
+    console.error('Erreur réseau :', error);
+    alert('Une erreur réseau s\'est produite. Veuillez vérifier votre connexion.');
   } finally {
     setIsSaving(false);
   }
 };
 
-
-       
-
-        const response = await fetch('/api/saveResponses', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-          // @ts-ignore
-            body: JSON.stringify(payload),
-        });
-
-        if (response.ok) {
-            setShowPopup(true); // Show the popup on success
-        } else {
-            const errorText = await response.text();
-            console.error('Server response:', errorText);
-            alert('Erreur lors de la sauvegarde des réponses.');
-        }
-    } catch (error) {
-        console.error('Erreur réseau :', error);
-        alert('Une erreur réseau s\'est produite. Veuillez vérifier votre connexion.');
-    } finally {
-        setIsSaving(false);
-    }
-};
 
 
   const handleClosePopup = () => {
