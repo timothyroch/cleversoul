@@ -35,40 +35,47 @@ export const AnimatedSphere: React.FC<AnimatedSphereProps> = ({ onStart }) => {
     return () => clearInterval(interval); // Cleanup interval
   }, []);
 
-  // Fetch today’s answers after hydration
-  useEffect(() => {
-    const checkTodayAnswers = async () => {
-      try {
-        const response = await fetch("/api/GetResponses", { method: "GET" });
+// Define the structure for entries
+interface AnswerEntry {
+  timestamp: string;  // Assuming timestamp is a string in ISO format
+  [key: string]: any; // Allowing for other properties
+}
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+// Fetch today’s answers after hydration
+useEffect(() => {
+  const checkTodayAnswers = async () => {
+    try {
+      const response = await fetch("/api/GetResponses", { method: "GET" });
 
-        const data = await response.json();
-
-        if (data.success && data.data.length > 0) {
-          const today = new Date();
-          const todayDateString = today.toISOString().split("T")[0];
-
-          // Check if there is any answer with today's date
-          const todayData = data.data.find((entry) => {
-            const entryDate = new Date(entry.timestamp).toISOString().split("T")[0];
-            return entryDate === todayDateString;
-          });
-
-          if (todayData) {
-            setHasCompletedQuiz(true);
-            setTodayAnswers(todayData);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching today’s answers:", error);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-    };
 
-    checkTodayAnswers();
-  }, []);
+      const data = await response.json();
+
+      if (data.success && data.data.length > 0) {
+        const today = new Date();
+        const todayDateString = today.toISOString().split("T")[0];
+
+        // Explicitly type 'entry' to avoid TypeScript error
+        const todayData = data.data.find((entry: AnswerEntry) => {
+          const entryDate = new Date(entry.timestamp).toISOString().split("T")[0];
+          return entryDate === todayDateString;
+        });
+
+        if (todayData) {
+          setHasCompletedQuiz(true);
+          setTodayAnswers(todayData);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching today’s answers:", error);
+    }
+  };
+
+  checkTodayAnswers();
+}, []);
+
 
   // Generate the 3D sphere animation
   useEffect(() => {
