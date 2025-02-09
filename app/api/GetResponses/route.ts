@@ -1,6 +1,6 @@
-import { MongoClient, WithId, Document } from 'mongodb';
+import { MongoClient } from 'mongodb';  // Removed unused WithId and Document
 
-const uri = "mongodb+srv://timothyroch123:aaabbbccc333@cluster0.26lls.mongodb.net/CleverSoul?retryWrites=true&w=majority";
+const uri = process.env.MONGODB_URI!;
 let client: MongoClient | null = null;
 
 const connectToDatabase = async () => {
@@ -12,7 +12,7 @@ const connectToDatabase = async () => {
 };
 
 // Define GET handler for Next.js app directory
-export const GET = async (req: Request) => {
+export const GET = async (_req: Request) => {  // Prefixed req with underscore
     try {
         // Calculate start and end of the current day in UTC
         const now = new Date();
@@ -47,4 +47,3 @@ export const GET = async (req: Request) => {
         );
     }
 };
-
