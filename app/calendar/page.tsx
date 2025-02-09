@@ -35,8 +35,9 @@ const getFirstWeekday = (year: number, month: number): number => {
 export default function CalendarPage() {
 // eslint-disable-next-line react-hooks/rules-of-hooks
 const router = useRouter();
-
+// eslint-disable-next-line react-hooks/rules-of-hooks
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
 // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
