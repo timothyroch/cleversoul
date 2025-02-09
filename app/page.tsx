@@ -3,20 +3,20 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-// Utility function to get days in a month
-const getDaysInMonth = (year: number, month: number) => {
-  const days = new Date(year, month, 0).getDate(); // Month is 1-based in JavaScript Date
-  return Array.from({ length: days }, (_, i) => i + 1); // Create array of days
+// Utility function to get days in a month (month is 1-based)
+const getDaysInMonth = (year: number, month: number): number[] => {
+  const days = new Date(year, month, 0).getDate();
+  return Array.from({ length: days }, (_, i) => i + 1);
 };
 
 // Utility function to format month names
-const getMonthName = (month: number) => {
-  const date = new Date(0, month - 1); // Month is 0-based in JavaScript
+const getMonthName = (month: number): string => {
+  const date = new Date(0, month - 1);
   return date.toLocaleString("default", { month: "long" });
 };
 
 // Utility function to get day names starting from Monday
-const getDayNames = () => {
+const getDayNames = (): string[] => {
   const baseDate = new Date(2021, 5, 7); // June 7, 2021 is a Monday
   return Array.from({ length: 7 }, (_, i) => {
     const day = new Date(baseDate);
@@ -25,43 +25,44 @@ const getDayNames = () => {
   });
 };
 
-// Utility function to get the weekday index of the first day of the month (Monday = 0, Sunday = 6)
-const getFirstWeekday = (year: number, month: number) => {
+// Utility function to get the weekday index of the first day of the month
+// (returns 0 for Monday, 6 for Sunday)
+const getFirstWeekday = (year: number, month: number): number => {
   const firstDay = new Date(year, month - 1, 1);
   const day = firstDay.getDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
-  return day === 0 ? 6 : day - 1; // Adjust so that Monday = 0, ..., Sunday = 6
+  return day === 0 ? 6 : day - 1;
 };
 
-export default function CalendarPage() {
+export default function HomePage() {
   const router = useRouter();
-  
-  // State Hooks - declared at the top level to avoid React Hook misuse errors
+
+  // Declare hooks at the top level
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
-  const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1); // Months are 0-based in JavaScript
+  const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
   const dayNames = getDayNames();
   const firstWeekday = getFirstWeekday(currentYear, currentMonth);
 
-  // Create an array with empty slots and actual days
-  const calendarDays = [
-    ...Array(firstWeekday).fill(null), // Empty slots for the start of the month
-    ...daysInMonth.map((day) => day),
+  // Build calendar grid: start with empty slots before the 1st
+  const calendarDays: (number | null)[] = [
+    ...Array(firstWeekday).fill(null),
+    ...daysInMonth,
   ];
 
-  // Ensure the total number of cells is a multiple of 7
+  // Pad the grid so the total number of cells is a multiple of 7
   const totalCells = Math.ceil(calendarDays.length / 7) * 7;
   while (calendarDays.length < totalCells) {
     calendarDays.push(null);
   }
 
-  // Navigate to dynamic route when clicking a day
-  const handleDayClick = (day: number) => {
+  // Handler for when a day is clicked; navigates to a dynamic route
+  const handleDayClick = (day: number): void => {
     router.push(`/calendar/day/${currentYear}/${currentMonth}/${day}`);
   };
 
-  // Navigate to the previous month
-  const goToPrevMonth = () => {
+  // Handlers to navigate between months
+  const goToPrevMonth = (): void => {
     if (currentMonth === 1) {
       setCurrentMonth(12);
       setCurrentYear(currentYear - 1);
@@ -70,8 +71,7 @@ export default function CalendarPage() {
     }
   };
 
-  // Navigate to the next month
-  const goToNextMonth = () => {
+  const goToNextMonth = (): void => {
     if (currentMonth === 12) {
       setCurrentMonth(1);
       setCurrentYear(currentYear + 1);
@@ -80,9 +80,9 @@ export default function CalendarPage() {
     }
   };
 
-  // Determine if a day is today
+  // Check if a given day is today
   const today = new Date();
-  const isToday = (day: number) =>
+  const isToday = (day: number): boolean =>
     day === today.getDate() &&
     currentMonth === today.getMonth() + 1 &&
     currentYear === today.getFullYear();
@@ -110,19 +110,19 @@ export default function CalendarPage() {
         </button>
       </header>
 
-      {/* Day Labels */}
+      {/* Render day labels */}
       <div style={styles.dayLabels}>
-        {dayNames.map((day) => (
-          <div key={day} style={styles.dayLabel}>
-            {day}
+        {dayNames.map((name, index) => (
+          <div key={index} style={styles.dayLabel}>
+            {name}
           </div>
         ))}
       </div>
 
-      {/* Calendar Grid */}
+      {/* Render calendar grid */}
       <div style={styles.grid}>
         {calendarDays.map((day, index) =>
-          day ? (
+          day !== null ? (
             <button
               key={index}
               style={{
@@ -162,7 +162,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   dateDisplay: {
     fontSize: "1.8rem",
-    fontWeight: "600",
+    fontWeight: 600,
     color: "#333",
   },
   month: {
@@ -194,7 +194,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   dayLabel: {
     textAlign: "center",
-    fontWeight: "600",
+    fontWeight: 600,
     color: "#555",
     fontSize: "1rem",
   },
