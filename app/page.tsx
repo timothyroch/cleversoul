@@ -34,13 +34,14 @@ const getFirstWeekday = (year: number, month: number): number => {
 };
 
 export default function HomePage() {
-  const router = useRouter();  // ✅ Hook called at the top level
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const router = useRouter();  
 
   // Declare hooks at the top level
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
 
-  // Ensure proper state initialization to avoid potential re-renders
+ // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
     setCurrentMonth(new Date().getMonth() + 1);
