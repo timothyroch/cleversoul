@@ -3,65 +3,67 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-// Utility function to get days in a month
-function getDaysInMonth(year: number, month: number) {
-  const days = new Date(year, month, 0).getDate(); // Month is 1-based in JavaScript Date
-  return Array.from({ length: days }, (_, i) => i + 1); // Create array of days
-}
+// Utility function to get days in a month (month is 1-based)
+const getDaysInMonth = (year: number, month: number): number[] => {
+  const days = new Date(year, month, 0).getDate();
+  return Array.from({ length: days }, (_, i) => i + 1);
+};
 
 // Utility function to format month names
-function getMonthName(month: number) {
-  const date = new Date(0, month - 1); // Month is 0-based in JavaScript
+const getMonthName = (month: number): string => {
+  const date = new Date(0, month - 1);
   return date.toLocaleString("default", { month: "long" });
-}
+};
 
 // Utility function to get day names starting from Monday
-function getDayNames() {
+const getDayNames = (): string[] => {
   const baseDate = new Date(2021, 5, 7); // June 7, 2021 is a Monday
-  const dayNames = [];
+  const dayNames: string[] = [];
   for (let i = 0; i < 7; i++) {
     const day = new Date(baseDate);
     day.setDate(baseDate.getDate() + i);
     dayNames.push(day.toLocaleString("default", { weekday: "short" }));
   }
   return dayNames;
-}
+};
 
-// Utility function to get the weekday index of the first day of the month (Monday = 0, Sunday = 6)
-function getFirstWeekday(year: number, month: number) {
+// Utility function to get the weekday index of the first day of the month
+// (returns 0 for Monday, 6 for Sunday)
+const getFirstWeekday = (year: number, month: number): number => {
   const firstDay = new Date(year, month - 1, 1);
-  let day = firstDay.getDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
-  // Adjust so that Monday = 0, ..., Sunday = 6
+  const day = firstDay.getDay(); // Sunday = 0, Monday = 1, ... Saturday = 6
   return day === 0 ? 6 : day - 1;
-}
+};
 
 export default function CalendarPage() {
   const router = useRouter();
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1); // Months are 0-based
+  const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1); // JavaScript months are 0-based
 
+  // Get the days, day names, and starting weekday for the current month
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
   const dayNames = getDayNames();
-  const firstWeekday = getFirstWeekday(currentYear, currentMonth); // Number of empty slots before the first day
+  const firstWeekday = getFirstWeekday(currentYear, currentMonth);
 
-  // Create an array with empty slots and actual days
-  const calendarDays = [
-    ...Array(firstWeekday).fill(null), // Empty slots
-    ...daysInMonth.map((day) => day),
+  // Build the calendar grid:
+  // First, add empty slots for days before the 1st of the month
+  const calendarDays: (number | null)[] = [
+    ...Array(firstWeekday).fill(null),
+    ...daysInMonth,
   ];
 
-  // Optionally, pad the last week with empty slots to make the total number of cells a multiple of 7
+  // Pad the end of the calendar so the total number of cells is a multiple of 7
   const totalCells = Math.ceil(calendarDays.length / 7) * 7;
   while (calendarDays.length < totalCells) {
     calendarDays.push(null);
   }
 
-  // Navigate to dynamic route
+  // Handler for when a day is clicked
   const handleDayClick = (day: number) => {
     router.push(`/calendar/day/${currentYear}/${currentMonth}/${day}`);
   };
 
-  // Navigate to the previous month
+  // Handlers to navigate between months
   const goToPrevMonth = () => {
     if (currentMonth === 1) {
       setCurrentMonth(12);
@@ -71,7 +73,6 @@ export default function CalendarPage() {
     }
   };
 
-  // Navigate to the next month
   const goToNextMonth = () => {
     if (currentMonth === 12) {
       setCurrentMonth(1);
@@ -81,9 +82,9 @@ export default function CalendarPage() {
     }
   };
 
-  // Determine if a day is today
+  // Helper to check if a given day is today
   const today = new Date();
-  const isToday = (day: number) =>
+  const isToday = (day: number): boolean =>
     day === today.getDate() &&
     currentMonth === today.getMonth() + 1 &&
     currentYear === today.getFullYear();
@@ -91,36 +92,31 @@ export default function CalendarPage() {
   return (
     <div style={styles.container}>
       <header style={styles.header}>
-        <button
-          style={styles.navButton}
-          onClick={goToPrevMonth}
-          aria-label="Previous Month"
-        >
+        <button style={styles.navButton} onClick={goToPrevMonth} aria-label="Previous Month">
           ←
         </button>
         <div style={styles.dateDisplay}>
           <span style={styles.month}>{getMonthName(currentMonth)}</span>{" "}
           <span style={styles.year}>{currentYear}</span>
         </div>
-        <button
-          style={styles.navButton}
-          onClick={goToNextMonth}
-          aria-label="Next Month"
-        >
+        <button style={styles.navButton} onClick={goToNextMonth} aria-label="Next Month">
           →
         </button>
       </header>
-      {/* Day Labels */}
+
+      {/* Render day names */}
       <div style={styles.dayLabels}>
-        {dayNames.map((day) => (
-          <div key={day} style={styles.dayLabel}>
-            {day}
+        {dayNames.map((dayName, index) => (
+          <div key={index} style={styles.dayLabel}>
+            {dayName}
           </div>
         ))}
       </div>
+
+      {/* Render calendar grid */}
       <div style={styles.grid}>
         {calendarDays.map((day, index) =>
-          day ? (
+          day !== null ? (
             <button
               key={index}
               style={{
@@ -160,7 +156,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   dateDisplay: {
     fontSize: "1.8rem",
-    fontWeight: "600",
+    fontWeight: 600,
     color: "#333",
   },
   month: {
@@ -192,7 +188,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   dayLabel: {
     textAlign: "center",
-    fontWeight: "600",
+    fontWeight: 600,
     color: "#555",
     fontSize: "1rem",
   },
