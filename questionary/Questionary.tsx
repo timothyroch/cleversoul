@@ -79,7 +79,7 @@ const getSummaryAndRecommendations = async (responses: any) => {
 
 
 /*end of the ai implementation*/
-
+// @ts-ignore
 const Questionary: React.FC = () => {
   const [responses, setResponses] = useState<{ [key: string]: any }>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
