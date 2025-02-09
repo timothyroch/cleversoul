@@ -124,7 +124,7 @@ const [loading, setLoading] = useState(false); // To track the loading state for
   setIsSaving(true);
   try {
     // Ensure summary is an object before accessing properties
-    const content = typeof summary === 'object' && summary?.message?.content;
+   const content = summary;
 
     const currentDateTime = new Date().toISOString(); // Get the current date and time in ISO format
 
