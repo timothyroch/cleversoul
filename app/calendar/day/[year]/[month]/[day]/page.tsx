@@ -23,11 +23,8 @@ interface Quiz {
 }
 
 
-export default function DayPage({
-  params,
-}: {
-  params: { year: string; month: string; day: string };
-}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function DayPage({ params }: any) {
   const router = useRouter();
   const { year, month, day } = params;
 
