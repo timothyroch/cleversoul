@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 // Utility function to get days in a month (month is 1-based)
@@ -18,71 +18,75 @@ const getMonthName = (month: number): string => {
 // Utility function to get day names starting from Monday
 const getDayNames = (): string[] => {
   const baseDate = new Date(2021, 5, 7); // June 7, 2021 is a Monday
-  const dayNames: string[] = [];
-  for (let i = 0; i < 7; i++) {
+  return Array.from({ length: 7 }, (_, i) => {
     const day = new Date(baseDate);
     day.setDate(baseDate.getDate() + i);
-    dayNames.push(day.toLocaleString("default", { weekday: "short" }));
-  }
-  return dayNames;
+    return day.toLocaleString("default", { weekday: "short" });
+  });
 };
 
 // Utility function to get the weekday index of the first day of the month
-// (returns 0 for Monday, 6 for Sunday)
 const getFirstWeekday = (year: number, month: number): number => {
   const firstDay = new Date(year, month - 1, 1);
-  const day = firstDay.getDay(); // Sunday = 0, Monday = 1, ... Saturday = 6
+  const day = firstDay.getDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
   return day === 0 ? 6 : day - 1;
 };
 
 export default function CalendarPage() {
-  const router = useRouter();
+  const router = useRouter();  // ✅ Ensure hook is at the top level
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
-  const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1); // JavaScript months are 0-based
+  const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
 
-  // Get the days, day names, and starting weekday for the current month
+  // Ensure proper initialization on component mount
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+    setCurrentMonth(new Date().getMonth() + 1);
+  }, []);
+
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
   const dayNames = getDayNames();
   const firstWeekday = getFirstWeekday(currentYear, currentMonth);
 
-  // Build the calendar grid:
-  // First, add empty slots for days before the 1st of the month
+  // Build the calendar grid: start with empty slots before the 1st
   const calendarDays: (number | null)[] = [
     ...Array(firstWeekday).fill(null),
     ...daysInMonth,
   ];
 
-  // Pad the end of the calendar so the total number of cells is a multiple of 7
+  // Pad the grid so the total number of cells is a multiple of 7
   const totalCells = Math.ceil(calendarDays.length / 7) * 7;
   while (calendarDays.length < totalCells) {
     calendarDays.push(null);
   }
 
-  // Handler for when a day is clicked
+  // Navigate to the specific day when clicked
   const handleDayClick = (day: number) => {
     router.push(`/calendar/day/${currentYear}/${currentMonth}/${day}`);
   };
 
-  // Handlers to navigate between months
+  // Navigate to previous month
   const goToPrevMonth = () => {
-    if (currentMonth === 1) {
-      setCurrentMonth(12);
-      setCurrentYear(currentYear - 1);
-    } else {
-      setCurrentMonth(currentMonth - 1);
-    }
+    setCurrentMonth(prevMonth => {
+      if (prevMonth === 1) {
+        setCurrentYear(year => year - 1);
+        return 12;
+      }
+      return prevMonth - 1;
+    });
   };
 
+  // Navigate to next month
   const goToNextMonth = () => {
-    if (currentMonth === 12) {
-      setCurrentMonth(1);
-      setCurrentYear(currentYear + 1);
-    } else {
-      setCurrentMonth(currentMonth + 1);
-    }
+    setCurrentMonth(prevMonth => {
+      if (prevMonth === 12) {
+        setCurrentYear(year => year + 1);
+        return 1;
+      }
+      return prevMonth + 1;
+    });
   };
 
-  // Helper to check if a given day is today
+  // Check if a given day is today
   const today = new Date();
   const isToday = (day: number): boolean =>
     day === today.getDate() &&
