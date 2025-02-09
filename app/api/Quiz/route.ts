@@ -1,7 +1,7 @@
 import { MongoClient } from "mongodb";
 import { NextResponse } from "next/server";
 
-const uri = "mongodb+srv://timothyroch123:aaabbbccc333@cluster0.26lls.mongodb.net/CleverSoul?retryWrites=true&w=majority";
+const uri = process.env.MONGODB_URI!;
 let client: MongoClient | null = null;
 
 // Helper function to connect to the MongoDB database
@@ -28,10 +28,6 @@ export async function GET(request: Request) {
     const providedDate = new Date(date);
     const startOfDay = new Date(Date.UTC(providedDate.getUTCFullYear(), providedDate.getUTCMonth(), providedDate.getUTCDate(), 0, 0, 0));
     const endOfDay = new Date(Date.UTC(providedDate.getUTCFullYear(), providedDate.getUTCMonth(), providedDate.getUTCDate(), 23, 59, 59, 999));
-
-    // Log the start and end times to ensure they are correct
-    console.log("Start of Day (UTC):", startOfDay.toISOString());
-    console.log("End of Day (UTC):", endOfDay.toISOString());
 
     // Connect to the database and fetch the answers from the 'Answers' collection
     const db = await connectToDatabase();
