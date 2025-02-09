@@ -10,7 +10,8 @@ interface QuestionProps {
 const Question9: React.FC<QuestionProps> = ({ onNext }) => {
   const [response, setResponse] = useState<string>("");
   const [rating, setRating] = useState<number>(0);
-  const [showTextarea, setShowTextarea] = useState<boolean | null>(null);
+const [showTextarea, setShowTextarea] = useState<boolean>(false);
+
 
   const handleYesClick = () => {
     setShowTextarea(true);
