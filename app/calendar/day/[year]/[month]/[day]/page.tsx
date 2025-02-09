@@ -32,7 +32,7 @@ interface DayPageProps {
 export default function DayPage({ params }: { params: any }) {
   const router = useRouter();
   const { year, month, day } = params;
-} // Removed React.use(params) as it's invalid
+
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);  // Replaced any with Quiz type
   const [loading, setLoading] = useState<boolean>(true);  // Added explicit boolean type
