@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { FiCalendar } from "react-icons/fi";
-import { PageProps } from "next";
+
 
 // Define the expected structure of the quiz data
 interface QuizQuestion {
@@ -23,7 +23,11 @@ interface Quiz {
 }
 
 
-export default function DayPage({ params }: DayPageProps) {
+export default function DayPage({
+  params,
+}: {
+  params: { year: string; month: string; day: string };
+}) {
   const router = useRouter();
   const { year, month, day } = params;
 
