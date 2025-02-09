@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 // Utility function to get days in a month (month is 1-based)
@@ -34,11 +34,17 @@ const getFirstWeekday = (year: number, month: number): number => {
 };
 
 export default function HomePage() {
-  const router = useRouter();
+  const router = useRouter();  // ✅ Hook called at the top level
 
   // Declare hooks at the top level
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
+
+  // Ensure proper state initialization to avoid potential re-renders
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+    setCurrentMonth(new Date().getMonth() + 1);
+  }, []);
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
   const dayNames = getDayNames();
@@ -63,21 +69,23 @@ export default function HomePage() {
 
   // Handlers to navigate between months
   const goToPrevMonth = (): void => {
-    if (currentMonth === 1) {
-      setCurrentMonth(12);
-      setCurrentYear(currentYear - 1);
-    } else {
-      setCurrentMonth(currentMonth - 1);
-    }
+    setCurrentMonth(prev => {
+      if (prev === 1) {
+        setCurrentYear(year => year - 1);
+        return 12;
+      }
+      return prev - 1;
+    });
   };
 
   const goToNextMonth = (): void => {
-    if (currentMonth === 12) {
-      setCurrentMonth(1);
-      setCurrentYear(currentYear + 1);
-    } else {
-      setCurrentMonth(currentMonth + 1);
-    }
+    setCurrentMonth(prev => {
+      if (prev === 12) {
+        setCurrentYear(year => year + 1);
+        return 1;
+      }
+      return prev + 1;
+    });
   };
 
   // Check if a given day is today
